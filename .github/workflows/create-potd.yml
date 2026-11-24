@@ -1,0 +1,81 @@
+name: Create GFG POTD Folders
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-folders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate November 2026 POTD folders and files
+        run: |
+          python3 - << 'EOF'
+          import os
+
+          problems = [
+              ("1 Nov", "Maximum Subarray Sum with One Square Allowed", "Medium"),
+              ("2 Nov", "Largest Sum Cycle", "Hard"),
+              ("3 Nov", "Count Tree Paths With Limited Max Edge Weight", "Hard"),
+              ("4 Nov", "XOR of All Subarray XORs", "Medium"),
+              ("5 Nov", "Minimum Days", "Medium"),
+              ("6 Nov", "Balanced Binary Tree Counter", "Medium"),
+              ("7 Nov", "Generate Usernames", "Medium"),
+              ("8 Nov", "Minimum Time with 2 Scanners", "Easy"),
+              ("9 Nov", "Count Group Occurrences", "Easy"),
+              ("10 Nov", "At Least K Occurrences", "Easy"),
+              ("11 Nov", "Any Duplicate Within K Distance", "Easy"),
+              ("12 Nov", "Closest in BST", "Medium"),
+              ("13 Nov", "Common Nodes in Two BSTs", "Medium"),
+              ("14 Nov", "Max Equal Sum in 3 Stacks", "Medium"),
+              ("15 Nov", "Sum of All Digit Subsequences", "Easy"),
+              ("16 Nov", "K-th Missing in Natural Numbers", "Medium"),
+              ("17 Nov", "Repeated Pattern Check", "Easy"),
+              ("18 Nov", "XOR of Number Range", "Easy"),
+              ("19 Nov", "Sort in Specific Order", "Medium"),
+              ("20 Nov", "Min Flips for Alternate", "Easy"),
+              ("21 Nov", "Smallest Subarray Sum Greater Than x", "Easy"),
+              ("22 Nov", "Longest Subarray Sum Divisible by K", "Medium"),
+              ("23 Nov", "Character at Position in Infinite String", "Medium"),
+              ("24 Nov", "Two Pairs with Same Sum", "Medium"),
+              ("25 Nov", "Geek's Destination with Special Jump", "Hard"),
+          ]
+
+          readme_lines = [
+              "# GeeksforGeeks POTD - November 2026 (C++)\n",
+              "| Date | Problem Name | Difficulty | Solution |",
+              "| :--- | :--- | :---: | :---: |",
+          ]
+
+          for folder, title, diff in problems:
+              os.makedirs(folder, exist_ok=True)
+              safe_name = "".join(c if c.isalnum() or c in " -_" else "" for c in title).replace(" ", "_")
+              cpp_file = f"{safe_name}.cpp"
+              cpp_path = os.path.join(folder, cpp_file)
+
+              with open(cpp_path, "w", encoding="utf-8") as f:
+                  f.write(f"// Date: {folder} 2026\n")
+                  f.write(f"// Problem: {title}\n")
+                  f.write(f"// Difficulty: {diff}\n\n")
+                  f.write("#include <bits/stdc++.h>\nusing namespace std;\n\n")
+                  f.write("// Paste your C++ solution here\n")
+
+              link = f"./{folder.replace(' ', '%20')}/{cpp_file}"
+              readme_lines.append(f"| {folder} | {title} | {diff} | [Code]({link}) |")
+
+          with open("README.md", "w", encoding="utf-8") as f:
+              f.write("\n".join(readme_lines) + "\n")
+          EOF
+
+      - name: Commit and push generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Create Nov 2026 POTD folders and C++ templates"
+          git push
